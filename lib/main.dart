@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import './detail.dart';
 
-void main() {
+void main(){
   runApp(new MaterialApp(
+    title: "Sidebar",
     home: new Home(),
   ));
 }
@@ -13,156 +14,81 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final List<String> gambar = [
-    "1.jpg",
-    "2.jpg",
-    "3.jpg",
-    "4.jpg",
-    "5.jpg",
-  ];
+
+String gambar1="http://idrcorner.com/images/icon/gw.jpg";
+String gambar2="https://inspired.disney.co.uk/wp-content/uploads/2017/04/disneyinspired-potc-quiz-v02-660x660-1.jpg";
+String backup;
+
+String nama1="Indra Armaulana";
+String nama2="Jack Sparrow";
+String backupnama;
+
+void gantiuser(){
+  this.setState((){
+    backup=gambar1;
+    gambar1=gambar2;
+    gambar2=backup;
+
+    backupnama=nama1;
+    nama1=nama2;
+    nama2=backupnama;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
-    timeDilation = 5.0;
     return new Scaffold(
-      body: new Container(
-        decoration: new BoxDecoration(
-            gradient: new LinearGradient(
-                begin: FractionalOffset.topRight,
-                end: FractionalOffset.bottomLeft,
-                colors: [
-              Colors.red,
-              Colors.yellow,
-              Colors.green,
-            ])),
-        child: new PageView.builder(
-          controller: new PageController(viewportFraction: 0.8),
-          itemCount: gambar.length,
-          itemBuilder: (BuildContext context, int i) {
-            return new Padding(
-              padding:
-                  new EdgeInsets.symmetric(horizontal: 5.0, vertical: 22.0),
-              child: new Material(
-                borderRadius: new BorderRadius.circular(15.0),
-                elevation: 8.0,
-                child: new Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    new Hero(
-                      tag: gambar[i],
-                      child: new Material(
-                        child: new InkWell(
-                            onTap: () => Navigator
-                                .of(context)
-                                .push(new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      new Halamandua(
-                                        gambar: gambar[i],
-                                      ),
-                                )),
-                            child: new Image.asset(
-                              "img/${gambar[i]}",
-                              fit: BoxFit.cover,
-                            )),
-                      ),
-                    )
-                  ],
+      appBar: new AppBar(title: new Text("Demo Sidebar (DRAWER)"),backgroundColor: Colors.red[700],),
+      drawer: new Drawer(
+        child: new ListView(
+          children: <Widget>[
+
+            new UserAccountsDrawerHeader(
+              accountName: new Text(nama1),
+              accountEmail: new Text("idrcorner@gmail.com"),
+              currentAccountPicture:  
+              new GestureDetector(
+                  onTap: (){
+                    Navigator.of(context).pop();
+                     Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (BuildContext context)=> new Detail(nama: nama1, gambar: gambar1,)
+                  ));
+                  },
+                  child: new CircleAvatar(
+                  backgroundImage: new NetworkImage(gambar1),
                 ),
               ),
-            );
-          },
+              decoration:  new BoxDecoration(
+                image: new DecorationImage(image: new NetworkImage("http://ichef.bbci.co.uk/images/ic/1600xn/p03gywjs.jpg"),
+                fit: BoxFit.cover
+                )
+              ),
+              otherAccountsPictures: <Widget>[
+                
+                new GestureDetector(
+                  onTap: ()=> gantiuser(),
+                   child:   new CircleAvatar( backgroundImage: new NetworkImage(gambar2),)
+            
+                )
+
+                 ],
+            ),
+            new ListTile(
+              title: new Text("Setting"),
+              trailing: new Icon(Icons.settings),
+            ),
+            new ListTile(
+              title: new Text("Close"),
+              trailing: new Icon(Icons.close)
+            ),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class Halamandua extends StatefulWidget {
-  Halamandua({this.gambar});
-  final String gambar;
-
-
-  @override
-  HalamanduaState createState() {
-    return new HalamanduaState();
-  }
-}
-
-class HalamanduaState extends State<Halamandua> {
-
-Color warna=Colors.grey;
-
-void _pilihannya(Pilihan pilihan){
-  setState((){
-  
-  });  warna=pilihan.warna;
-}
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("DOTA HERO"),
-        backgroundColor: Colors.grey,
-        actions: <Widget>[
-          new PopupMenuButton<Pilihan>(
-            onSelected: _pilihannya,
-            itemBuilder: (BuildContext context){
-              return listPilihan.map((Pilihan x){
-                  return new PopupMenuItem<Pilihan>(
-                    child: new Text(x.teks),
-                    value: x,
-                  );
-              }).toList();
-            },
-          )
-        ],
-      ),
-      body: new Stack(
-        children: <Widget>[
-          new Container(
-            decoration: new BoxDecoration(
-              gradient: new RadialGradient(
-                center: Alignment.center,
-                colors: [
-                  Colors.blue,
-                  warna,
-                  Colors.black.withOpacity(0.9),
-                ]
-              )
-            ),
+      body:new Center(
+          child: new Image(
+            image: new NetworkImage("http://idrcorner.com/assets/nn/imgs/logo.png",),width: 450.0,
           ),
-          new Center(
-            child: new Hero(
-              tag: widget.gambar,
-              child: new ClipOval(
-                child: new SizedBox(
-                  width: 200.0,
-                  height: 200.0,
-                  child: new Material(
-                    child: new InkWell(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: new Image.asset("img/${widget.gambar}",fit:  BoxFit.cover,),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          )
-        ],
       ),
     );
   }
 }
-
-class Pilihan{
-  const Pilihan({this.teks,this.warna});
-  final String teks;
-  final Color warna;
-}
-
-List<Pilihan> listPilihan = const <Pilihan>[
-  const Pilihan (teks: "Strength", warna: Colors.red),
-  const Pilihan (teks: "Agility", warna: Colors.green),
-  const Pilihan (teks: "Intelligence", warna: Colors.blue),
-];
